@@ -627,6 +627,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int starsStickerRow; // <-- Tambahkan ini
     private int addToGroupInfoRow;
     private int premiumRow;
+    private int customGrayInfoRow; // <-- TAMBAHKAN BARIS INI
     private int starsRow;
     private int tonRow;
     private int businessRow;
@@ -9256,6 +9257,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 infoEndRow = rowCount - 1;
                 infoSectionRow = rowCount++;
+                customGrayInfoRow = rowCount++; // <-- TAMBAHKAN BARIS INI
 
                 if (isBot && userInfo != null && userInfo.starref_program != null && (userInfo.starref_program.flags & 2) == 0 && getMessagesController().starrefConnectAllowed) {
                     affiliateRow = rowCount++;
@@ -11752,7 +11754,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                     }
                                 }
                             }
-                            value = LocaleController.getString(R.string.Username);
+                            value = "Invite Link";
+//                            value = LocaleController.getString(R.string.Username);
                             if (username != null) {
                                 text = "@" + username;
                                 if (usernameObj != null && !usernameObj.editable) {
@@ -11859,7 +11862,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (position == userInfoRow) {
                         TLRPC.User user = userInfo.user != null ? userInfo.user : getMessagesController().getUser(userInfo.id);
                         boolean addlinks = isBot || (user != null && user.premium && userInfo.about != null);
-                        aboutLinkCell.setTextAndValue(userInfo.about, LocaleController.getString(R.string.UserBio), addlinks);
+                        aboutLinkCell.setTextAndValue(userInfo.about, "Description", addlinks); // <-- BARIS INI DIUBAH
+//                        aboutLinkCell.setTextAndValue(userInfo.about, LocaleController.getString(R.string.UserBio), addlinks);
                     } else if (position == channelInfoRow) {
                         String text = chatInfo.about;
                         while (text.contains("\n\n\n")) {
@@ -12170,7 +12174,28 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 case VIEW_TYPE_SHADOW_TEXT: {
                     TextInfoPrivacyCell cell = (TextInfoPrivacyCell) holder.itemView;
                     cell.setLinkTextRippleColor(null);
-                    if (position == infoSectionRow) {
+                    // TAMBAHKAN BLOK 'IF' BERIKUT
+                    if (position == customGrayInfoRow) {
+                        // Atur teks yang Anda inginkan
+                        String text = "By launching this mini app, you agree to the Terms of Service for Mini Apps.";
+                        SpannableStringBuilder spannable = new SpannableStringBuilder(text);
+
+                        // Membuat "Terms of Service for Mini Apps" bisa diklik (opsional)
+                        int startIndex = text.indexOf("Terms of Service");
+                        if (startIndex != -1) {
+                            int endIndex = text.length();
+                            spannable.setSpan(new URLSpan(""), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); // Ganti "" dengan URL jika ada
+                            spannable.setSpan(new ForegroundColorSpan(Theme.getColor(Theme.key_windowBackgroundWhiteLinkText)), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        }
+                        cell.setText(spannable);
+
+                        // Membuat teks berada di tengah
+                        cell.getTextView().setGravity(Gravity.LEFT);
+
+                        // Mengatur background abu-abu, sama seperti baris section lainnya
+                        cell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
+
+                    } else if (position == infoSectionRow) {
                         final long did = getDialogId();
                         TLObject obj = getMessagesController().getUserOrChat(did);
                         TL_bots.botVerification bot_verification = userInfo != null ? userInfo.bot_verification : chatInfo != null ? chatInfo.bot_verification : null;
@@ -12236,11 +12261,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             cell.setText(formatString(R.string.ProfileBotAffiliateProgramInfo, UserObject.getUserName(botUser), percents(userInfo != null && userInfo.starref_program != null ? userInfo.starref_program.commission_permille : 0)));
                         }
                     }
-                    if (position == infoSectionRow && lastSectionRow == -1 && secretSettingsSectionRow == -1 && sharedMediaRow == -1 && membersSectionRow == -1 || position == secretSettingsSectionRow || position == lastSectionRow || position == membersSectionRow && lastSectionRow == -1 && sharedMediaRow == -1) {
-                        cell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider_bottom, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
-                    } else {
-                        cell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
-                    }
+
                     break;
                 }
                 case VIEW_TYPE_COLORFUL_TEXT: {
@@ -12542,7 +12563,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return VIEW_TYPE_CHANNEL;
             } else if (position == botAppRow) {
                 return VIEW_TYPE_BOT_APP;
-            } else if (position == infoSectionRow || position == infoAffiliateRow) {
+            } else if (position == infoSectionRow || position == infoAffiliateRow || position == customGrayInfoRow) {
                 return VIEW_TYPE_SHADOW_TEXT;
             } else if (position == affiliateRow) {
                 return VIEW_TYPE_COLORFUL_TEXT;
