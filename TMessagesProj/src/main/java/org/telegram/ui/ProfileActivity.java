@@ -5257,6 +5257,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             }
             onWriteButtonClick();
         });
+        writeButton.setVisibility(View.GONE); // <-- TAMBAHKAN BARIS INI
         needLayout(false);
 
         if (scrollTo != -1) {
@@ -12223,6 +12224,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             cell.setFixedSize(14);
                             cell.setText(null);
                         }
+
+                        // <-- BARIS PERUBAHAN UTAMA ADA DI SINI -->
+                        // Mengatur background menjadi abu-abu solid, bukan lagi garis pemisah.
+                        cell.setBackgroundColor(getThemedColor(Theme.key_windowBackgroundGray));
+
                     } else if (position == infoAffiliateRow) {
                         final TLRPC.User botUser = getMessagesController().getUser(userId);
                         if (botUser != null && botUser.bot && botUser.bot_can_edit) {
@@ -12233,8 +12239,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             cell.setText(formatString(R.string.ProfileBotAffiliateProgramInfo, UserObject.getUserName(botUser), percents(userInfo != null && userInfo.starref_program != null ? userInfo.starref_program.commission_permille : 0)));
                         }
                     }
-
-                    break;
+                    break; // <-- BREAK SEKARANG DI SINI
                 }
                 case VIEW_TYPE_COLORFUL_TEXT: {
                     AffiliateProgramFragment.ColorfulTextCell cell = (AffiliateProgramFragment.ColorfulTextCell) holder.itemView;
