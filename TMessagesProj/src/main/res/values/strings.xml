@@ -1456,6 +1456,7 @@
     <string name="ScamMessage">SCAM</string>
     <string name="FakeMessage">FAKE</string>
     <string name="ViaBot">via</string>
+    <string name="Video">Video</string>
     <string name="MessageNotFound">Message doesn\'t exist</string>
     <string name="UniqueGiftNotFound">Gift was not found</string>
     <string name="SlowModeHint">Slow Mode is enabled. You can send\nyour next message in %1$s</string>

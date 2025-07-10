@@ -42,11 +42,6 @@ android {
 
     sourceSets.main.jniLibs.srcDirs = ['../TMessagesProj/jni/']
 
-    lintOptions {
-        disable 'MissingTranslation'
-        disable 'ExtraTranslation'
-        disable 'BlockedPrivateApi'
-    }
 
     dexOptions {
         jumboMode = true
@@ -186,9 +181,10 @@ android {
         buildConfig = true
     }
     namespace 'org.telegram.messenger.regular'
-
-    lintOptions {
+    lint {
         checkReleaseBuilds false
+        disable 'MissingTranslation', 'ExtraTranslation', 'BlockedPrivateApi'
     }
+
 }
 

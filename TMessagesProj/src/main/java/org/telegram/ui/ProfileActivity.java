@@ -623,6 +623,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int reportDividerRow;
     private int addToContactsRow;
     private int addToGroupButtonRow;
+    private int newRow1; // <-- Tambahkan ini
+    private int newRow2; // <-- Tambahkan ini
     private int addToGroupInfoRow;
     private int premiumRow;
     private int starsRow;
@@ -9065,6 +9067,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         secretSettingsSectionRow = -1;
         bottomPaddingRow = -1;
         addToGroupButtonRow = -1;
+        newRow1 = -1; // <-- Tambahkan reset ini
+        newRow2 = -1; // <-- Tambahkan reset ini
         addToGroupInfoRow = -1;
         infoStartRow = -1;
         infoEndRow = -1;
@@ -9305,6 +9309,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
 
                 if (user != null && isBot && !user.bot_nochats) {
+                    newRow1 = rowCount++; // <-- Atur posisi baris duplikat pertama
+                    newRow2 = rowCount++; // <-- Atur posisi baris duplikat kedua
                     addToGroupButtonRow = rowCount++;
                     addToGroupInfoRow = rowCount++;
                 } else if (botStarsBalanceRow >= 0) {
@@ -12045,8 +12051,21 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         textCell.getImageView().setPadding(0, 0, 0, AndroidUtilities.dp(8));
                         textCell.setImageLeft(12);
                         setAvatarCell = textCell;
+                    } else if (position == newRow1){
+                        SpannableStringBuilder value = new SpannableStringBuilder("TON 12,290");
+                        ChannelMonetizationLayout.replaceTON(value, textCell.getValueTextView().getPaint());
+                        textCell.setTextAndValueAndIcon("Toncoin", value, R.drawable.msg_ton, true);
+                    } else if (position == newRow2) {
+                        SpannableStringBuilder value = new SpannableStringBuilder("XTR 600");
+                        StarsIntroActivity.replaceStarsWithPlain(value, 0.85f);
+                        textCell.setTextAndValueAndIcon("Stars", value, R.drawable.msg_premium_liststar, true);
                     } else if (position == addToGroupButtonRow) {
-                        textCell.setTextAndIcon(LocaleController.getString(R.string.AddToGroupOrChannel), R.drawable.msg_groups_create, false);
+                        boolean hasDivider = (position == newRow2) ? false : true;
+                        textCell.setTextAndIcon(LocaleController.getString(R.string.AddToGroupOrChannel), R.drawable.msg_groups_create, hasDivider);
+                    } else if (position == addToGroupInfoRow) {
+                        TextInfoPrivacyCell addToGroupInfo = (TextInfoPrivacyCell) holder.itemView;
+                        addToGroupInfo.setBackground(Theme.getThemedDrawable(mContext, R.drawable.greydivider, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
+                        addToGroupInfo.setText(LocaleController.getString(R.string.BotAddToGroupOrChannelInfo));
                     } else if (position == premiumRow) {
                         textCell.setTextAndIcon(LocaleController.getString(R.string.TelegramPremium), new AnimatedEmojiDrawable.WrapSizeDrawable(PremiumGradient.getInstance().premiumStarMenuDrawable, dp(24), dp(24)), true);
                         textCell.setImageLeft(23);
@@ -12436,7 +12455,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         position == clearLogsRow || position == switchBackendRow || position == setAvatarRow ||
                         position == addToGroupButtonRow || position == premiumRow || position == premiumGiftingRow ||
                         position == businessRow || position == liteModeRow || position == birthdayRow || position == channelRow ||
-                        position == starsRow || position == tonRow;
+                        position == starsRow || position == tonRow || position == addToGroupButtonRow || position == newRow1 || position == newRow2;
             }
             if (holder.itemView instanceof UserCell) {
                 UserCell userCell = (UserCell) holder.itemView;
@@ -12480,7 +12499,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     position == clearLogsRow || position == switchBackendRow || position == setAvatarRow || position == addToGroupButtonRow ||
                     position == addToContactsRow || position == liteModeRow || position == premiumGiftingRow || position == businessRow ||
                     position == botStarsBalanceRow || position == botTonBalanceRow || position == channelBalanceRow || position == botPermissionLocation ||
-                    position == botPermissionBiometry || position == botPermissionEmojiStatus || position == tonRow
+                    position == botPermissionBiometry || position == botPermissionEmojiStatus || position == tonRow || position == addToGroupButtonRow || position == newRow1 || position == newRow2
             ) {
                 return VIEW_TYPE_TEXT;
             } else if (position == notificationsDividerRow) {
