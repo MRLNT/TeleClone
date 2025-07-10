@@ -627,7 +627,6 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
     private int starsStickerRow; // <-- Tambahkan ini
     private int addToGroupInfoRow;
     private int premiumRow;
-    private int customGrayInfoRow; // <-- TAMBAHKAN BARIS INI
     private int starsRow;
     private int tonRow;
     private int businessRow;
@@ -9225,7 +9224,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     }
                 }
                 infoStartRow = rowCount;
-                infoHeaderRow = rowCount++;
+//                infoHeaderRow = rowCount++;// <-- BERI KOMENTAR DI SINI
                 if (!isBot && (hasPhone || !hasInfo)) {
                     phoneRow = rowCount++;
                 }
@@ -9234,6 +9233,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 if (user != null && username != null) {
                     usernameRow = rowCount++;
+                    botAppRow = rowCount++;
                 }
                 if (userInfo != null) {
                     if (userInfo.birthday != null) {
@@ -9246,19 +9246,11 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         bizLocationRow = rowCount++;
                     }
                 }
-//                if (phoneRow != -1 || userInfoRow != -1 || usernameRow != -1 || bizHoursRow != -1 || bizLocationRow != -1) {
-//                    notificationsDividerRow = rowCount++;
-//                }
                 if (userId != getUserConfig().getClientUserId()) {
-                    notificationsRow = rowCount++;
-                }
-                if (isBot && user != null && user.bot_has_main_app) {
-                    botAppRow = rowCount++;
+//                    notificationsRow = rowCount++; // <-- BERI KOMENTAR DI SINI
                 }
                 infoEndRow = rowCount - 1;
                 infoSectionRow = rowCount++;
-                customGrayInfoRow = rowCount++; // <-- TAMBAHKAN BARIS INI
-
                 if (isBot && userInfo != null && userInfo.starref_program != null && (userInfo.starref_program.flags & 2) == 0 && getMessagesController().starrefConnectAllowed) {
                     affiliateRow = rowCount++;
                     infoAffiliateRow = rowCount++;
@@ -11757,7 +11749,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                             value = "Invite Link";
 //                            value = LocaleController.getString(R.string.Username);
                             if (username != null) {
-                                text = "@" + username;
+//                                text = "@" + username;
+                                text = "t.me/" + username; // <-- BARIS INI DIUBAH
                                 if (usernameObj != null && !usernameObj.editable) {
                                     text = new SpannableString(text);
                                     ((SpannableString) text).setSpan(makeUsernameLinkSpan(usernameObj), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -12174,28 +12167,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 case VIEW_TYPE_SHADOW_TEXT: {
                     TextInfoPrivacyCell cell = (TextInfoPrivacyCell) holder.itemView;
                     cell.setLinkTextRippleColor(null);
-                    // TAMBAHKAN BLOK 'IF' BERIKUT
-                    if (position == customGrayInfoRow) {
-                        // Atur teks yang Anda inginkan
-                        String text = "By launching this mini app, you agree to the Terms of Service for Mini Apps.";
-                        SpannableStringBuilder spannable = new SpannableStringBuilder(text);
-
-                        // Membuat "Terms of Service for Mini Apps" bisa diklik (opsional)
-                        int startIndex = text.indexOf("Terms of Service");
-                        if (startIndex != -1) {
-                            int endIndex = text.length();
-                            spannable.setSpan(new URLSpan(""), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE); // Ganti "" dengan URL jika ada
-                            spannable.setSpan(new ForegroundColorSpan(Theme.getColor(Theme.key_windowBackgroundWhiteLinkText)), startIndex, endIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        }
-                        cell.setText(spannable);
-
-                        // Membuat teks berada di tengah
-                        cell.getTextView().setGravity(Gravity.LEFT);
-
-                        // Mengatur background abu-abu, sama seperti baris section lainnya
-                        cell.setBackgroundDrawable(Theme.getThemedDrawable(mContext, R.drawable.greydivider, getThemedColor(Theme.key_windowBackgroundGrayShadow)));
-
-                    } else if (position == infoSectionRow) {
+                    if (position == infoSectionRow) {
                         final long did = getDialogId();
                         TLObject obj = getMessagesController().getUserOrChat(did);
                         TL_bots.botVerification bot_verification = userInfo != null ? userInfo.bot_verification : chatInfo != null ? chatInfo.bot_verification : null;
@@ -12563,7 +12535,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 return VIEW_TYPE_CHANNEL;
             } else if (position == botAppRow) {
                 return VIEW_TYPE_BOT_APP;
-            } else if (position == infoSectionRow || position == infoAffiliateRow || position == customGrayInfoRow) {
+            } else if (position == infoSectionRow || position == infoAffiliateRow) {
                 return VIEW_TYPE_SHADOW_TEXT;
             } else if (position == affiliateRow) {
                 return VIEW_TYPE_COLORFUL_TEXT;
