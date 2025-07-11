@@ -318,7 +318,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 public class ProfileActivity extends BaseFragment implements NotificationCenter.NotificationCenterDelegate, DialogsActivity.DialogsActivityDelegate, SharedMediaLayout.SharedMediaPreloaderDelegate, ImageUpdater.ImageUpdaterDelegate, SharedMediaLayout.Delegate {
-    private static final int PROFILE_HEADER_HEIGHT = 500;
     private final static int PHONE_OPTION_CALL = 0,
         PHONE_OPTION_COPY = 1,
         PHONE_OPTION_TELEGRAM_CALL = 2,
@@ -2236,7 +2235,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         searchTransitionProgress = 1f;
         searchMode = false;
         hasOwnBackground = true;
-        extraHeight = AndroidUtilities.dp(PROFILE_HEADER_HEIGHT);
+        extraHeight = AndroidUtilities.dp(88f);
         actionBar.setActionBarMenuOnItemClick(new ActionBar.ActionBarMenuOnItemClick() {
             @Override
             public void onItemClick(final int id) {
@@ -3024,13 +3023,13 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                         if (savedScrollPosition >= 0) {
                             layoutManager.scrollToPositionWithOffset(savedScrollPosition, savedScrollOffset - paddingTop);
                         } else if ((!changed || !allowPullingDown) && view != null) {
-                            if (pos == 0 && !allowPullingDown && top > AndroidUtilities.dp(PROFILE_HEADER_HEIGHT)) {
-                                top = AndroidUtilities.dp(PROFILE_HEADER_HEIGHT);
+                            if (pos == 0 && !allowPullingDown && top > AndroidUtilities.dp(88)) {
+                                top = AndroidUtilities.dp(88);
                             }
                             layoutManager.scrollToPositionWithOffset(pos, top - paddingTop);
                             layout = true;
                         } else {
-                            layoutManager.scrollToPositionWithOffset(0, AndroidUtilities.dp(PROFILE_HEADER_HEIGHT) - paddingTop);
+                            layoutManager.scrollToPositionWithOffset(0, AndroidUtilities.dp(88) - paddingTop);
                         }
                     }
                     if (currentPaddingTop != paddingTop || listView.getPaddingBottom() != paddingBottom) {
@@ -3814,7 +3813,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
                 final View view = layoutManager.findViewByPosition(0);
                 if (view != null && !openingAvatar) {
-                    final int canScroll = view.getTop() - AndroidUtilities.dp(PROFILE_HEADER_HEIGHT);
+                    final int canScroll = view.getTop() - AndroidUtilities.dp(88);
                     if (!allowPullingDown && canScroll > dy) {
                         dy = canScroll;
                         if (avatarsViewPager.hasImages() && avatarImage.getImageReceiver().hasNotThumb() && !AndroidUtilities.isAccessibilityScreenReaderEnabled() && !isInLandscapeMode && !AndroidUtilities.isTablet()) {
@@ -4807,10 +4806,10 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             textView.setText(LocaleController.getString(R.string.BanFromTheGroup));
             frameLayout1.addView(textView, LayoutHelper.createFrame(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT, Gravity.CENTER, 0, 1, 0, 0));
 
-            listView.setPadding(0, AndroidUtilities.dp(PROFILE_HEADER_HEIGHT), 0, AndroidUtilities.dp(48));
+            listView.setPadding(0, AndroidUtilities.dp(88), 0, AndroidUtilities.dp(48));
             listView.setBottomGlowOffset(AndroidUtilities.dp(48));
         } else {
-            listView.setPadding(0, AndroidUtilities.dp(PROFILE_HEADER_HEIGHT), 0, 0);
+            listView.setPadding(0, AndroidUtilities.dp(88), 0, 0);
         }
 
         topView = new TopView(context);
@@ -7254,7 +7253,7 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
         }
 
         if (avatarContainer != null) {
-            final float diff = Math.min(1f, extraHeight / AndroidUtilities.dp(PROFILE_HEADER_HEIGHT));
+            final float diff = Math.min(1f, extraHeight / AndroidUtilities.dp(88f));
 
             listView.setTopGlowOffset((int) extraHeight);
 
@@ -7338,8 +7337,8 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
             avatarY = (actionBar.getOccupyStatusBar() ? AndroidUtilities.statusBarHeight : 0) + ActionBar.getCurrentActionBarHeight() / 2.0f * (1.0f + diff) - 21 * AndroidUtilities.density + 27 * AndroidUtilities.density * diff + actionBar.getTranslationY();
 
             float h = openAnimationInProgress ? initialAnimationExtraHeight : extraHeight;
-            if (h > AndroidUtilities.dp(PROFILE_HEADER_HEIGHT) || isPulledDown) {
-                expandProgress = Math.max(0f, Math.min(1f, (h - AndroidUtilities.dp(PROFILE_HEADER_HEIGHT)) / (listView.getMeasuredWidth() - newTop - AndroidUtilities.dp(PROFILE_HEADER_HEIGHT))));
+            if (h > AndroidUtilities.dp(88f) || isPulledDown) {
+                expandProgress = Math.max(0f, Math.min(1f, (h - AndroidUtilities.dp(88f)) / (listView.getMeasuredWidth() - newTop - AndroidUtilities.dp(88f))));
                 avatarScale = AndroidUtilities.lerp((42f + 18f) / 42f, (42f + 42f + 18f) / 42f, Math.min(1f, expandProgress * 3f));
                 if (storyView != null) {
                     storyView.invalidate();
@@ -14630,8 +14629,18 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
 
     public void updateCollectibleHint() {
         if (collectibleHint == null) return;
-        collectibleHint.setJointPx(0, -collectibleHint.getPaddingLeft() + nameTextView[1].getX() + (nameTextView[1].getRightDrawableX() - nameTextView[1].getRightDrawableWidth() * lerp(0.45f, 0.25f, currentExpandAnimatorValue)) * nameTextView[1].getScaleX());
         final float expanded = AndroidUtilities.lerp(expandAnimatorValues, currentExpanAnimatorFracture);
+
+        // UBAH: Hitung posisi X untuk memusatkan collectibleHint di bawah nameTextView[1]
+        // Ini akan menempatkan pusat collectibleHint sejajar dengan pusat nameTextView[1]
+        float nameTextViewCenterX = nameTextView[1].getX() + nameTextView[1].getMeasuredWidth() / 2f;
+        collectibleHint.setJointPx(nameTextViewCenterX - collectibleHint.getMeasuredWidth() / 2f, 0); // Ubah Y offset menjadi 0 di sini, karena sudah diatur di translationY
+
+        // Gunakan posisi X dari nameTextView[1] ditambah offset ke drawable kanan jika ada,
+        // lalu pusatkan collectibleHint relatif terhadap titik itu.
+        // Ini mungkin perlu sedikit penyesuaian visual tergantung ukuran drawable dan padding.
+        // collectibleHint.setJointPx(nameTextView[1].getX() + nameTextView[1].getRightDrawableX() * nameTextView[1].getScaleX() + nameTextView[1].getRightDrawableWidth() * nameTextView[1].getScaleX() / 2f, 0); // Contoh jika ingin sejajar dengan tengah drawable kanan
+
         collectibleHint.setTranslationY(-collectibleHint.getPaddingBottom() + nameTextView[1].getY() - dp(24) + lerp(dp(6), -dp(12), expanded));
         collectibleHint.setBgColor(ColorUtils.blendARGB(collectibleHintBackgroundColor, 0x50000000, expanded));
         final boolean visible = extraHeight >= dp(82);
