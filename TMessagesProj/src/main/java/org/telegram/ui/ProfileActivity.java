@@ -9234,7 +9234,9 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                 }
                 if (user != null && username != null) {
                     usernameRow = rowCount++;
-                    botAppRow = rowCount++;
+                    if (user != null && user.bot) {
+                        botAppRow = rowCount++;
+                    }
                 }
                 if (userInfo != null) {
                     if (userInfo.birthday != null) {
