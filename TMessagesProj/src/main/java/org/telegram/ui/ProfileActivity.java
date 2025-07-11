@@ -11749,11 +11749,17 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                                     }
                                 }
                             }
-                            value = "Invite Link";
-//                            value = LocaleController.getString(R.string.Username);
+                            if (user != null && !user.bot && chatId == 0) {
+                                value = LocaleController.getString(R.string.Username);
+                            } else {
+                                value = "Invite Link";
+                            }
                             if (username != null) {
-//                                text = "@" + username;
-                                text = "t.me/" + username; // <-- BARIS INI DIUBAH
+                                if (user != null && !user.bot && chatId == 0) {
+                                    text = "@" + username;
+                                } else {
+                                    text = "t.me/" + username;
+                                }
                                 if (usernameObj != null && !usernameObj.editable) {
                                     text = new SpannableString(text);
                                     ((SpannableString) text).setSpan(makeUsernameLinkSpan(usernameObj), 0, text.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
