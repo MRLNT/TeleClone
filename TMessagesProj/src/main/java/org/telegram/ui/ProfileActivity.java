@@ -11856,14 +11856,23 @@ public class ProfileActivity extends BaseFragment implements NotificationCenter.
                     if (position == userInfoRow) {
                         TLRPC.User user = userInfo.user != null ? userInfo.user : getMessagesController().getUser(userInfo.id);
                         boolean addlinks = isBot || (user != null && user.premium && userInfo.about != null);
-                        aboutLinkCell.setTextAndValue(userInfo.about, "Description", addlinks); // <-- BARIS INI DIUBAH
-//                        aboutLinkCell.setTextAndValue(userInfo.about, LocaleController.getString(R.string.UserBio), addlinks);
+                        // Cek jika ini adalah profil pengguna biasa (bukan bot, grup, atau channel)
+                        if (userId != 0 && !isBot && currentChat == null) {
+                            aboutLinkCell.setTextAndValue(userInfo.about, LocaleController.getString(R.string.UserBio), addlinks); // Mengubah menjadi "Bio"
+                        } else {
+                            aboutLinkCell.setTextAndValue(userInfo.about, "Description", addlinks); // Tetap "Description"
+                        }
                     } else if (position == channelInfoRow) {
                         String text = chatInfo.about;
                         while (text.contains("\n\n\n")) {
                             text = text.replace("\n\n\n", "\n\n");
                         }
-                        aboutLinkCell.setTextAndValue(text, "Description", ChatObject.isChannel(currentChat) && !currentChat.megagroup); // BARIS INI DIUBAH
+                        // Cek jika ini adalah profil channel/grup (bukan pengguna biasa atau bot)
+                        if (chatId != 0 && currentChat != null) {
+                            aboutLinkCell.setTextAndValue(text, "Description", ChatObject.isChannel(currentChat) && !currentChat.megagroup); // Tetap "Description"
+                        } else {
+                            aboutLinkCell.setTextAndValue(text, "Description", ChatObject.isChannel(currentChat) && !currentChat.megagroup);
+                        }
                     } else if (position == bioRow) {
                         String value;
                         if (userInfo == null || !TextUtils.isEmpty(userInfo.about)) {
